@@ -1,0 +1,25 @@
+---
+import SettingsControl from "./SettingsControl.astro";
+
+const unavailableLinks = ["Learn", "Community", "Build"];
+---
+
+<header class="site-header">
+  <div class="site-header-inner shell">
+    <a class="wordmark" href="/" aria-label="n15m home">n15m</a>
+    <a class="compact-join" href="/#join">Get started</a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      {
+        unavailableLinks.map((label) => (
+          <span class="nav-unavailable" aria-disabled="true">
+            {label}
+          </span>
+        ))
+      }
+      <a class="nav-cta" href="/#join">Get started</a>
+    </nav>
+    <div class="site-controls">
+      <SettingsControl />
+    </div>
+  </div>
+</header>

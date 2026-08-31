@@ -1,0 +1,371 @@
+---
+import { ArrowLeft, ArrowRight } from "@lucide/astro";
+import PrincipleArtwork from "../components/PrincipleArtwork.astro";
+import { heroPhrases, projects } from "../data/site";
+import SiteLayout from "../layouts/SiteLayout.astro";
+import "../styles/home.css";
+---
+
+<SiteLayout
+  title="n15m | Network of Momentum"
+  description="An open network for sovereign digital communities, sustainable protocol development, and community-created incentives."
+>
+  <main id="content">
+    <section class="hero shell" id="top" aria-labelledby="hero-title">
+      <p class="hero-kicker">NETWORK OF MOMENTUM</p>
+
+      <div class="hero-copy">
+        <h1 class="hero-headline" id="hero-title">
+          Powering the new decentralized web.
+        </h1>
+        <div
+          class="hero-points"
+          data-hero-rotator
+          data-phrases={JSON.stringify(heroPhrases)}
+        >
+          <p class="visually-hidden">{heroPhrases.join(". ")}.</p>
+          <div class="phrase-stage" aria-hidden="true">
+            <span data-hero-phrase>{heroPhrases[0]}</span><i class="caret"></i>
+          </div>
+        </div>
+        <a class="hero-cta" href="#join">
+          Join the bootstrap
+          <ArrowRight aria-hidden="true" />
+        </a>
+      </div>
+
+      <div class="hero-narrative">
+        <h2>The internet has been captured.</h2>
+        <div class="network-narrative-copy">
+          <p>
+            A few platforms now decide what you see, who gets heard, and who
+            profits. What was meant to be open now runs on their terms.
+          </p>
+          <p>
+            <strong>But cypherpunks never give up.</strong> Protocols like <a
+              class="nostr-link"
+              href="https://nostr.org">Nostr</a
+            > give us a fighting chance to reclaim the open web.
+          </p>
+          <p>
+            But Nostr isn't enough on its own. Without an economy that rewards
+            people for building, running, and improving the network, it risks
+            remaining a niche protocol.
+          </p>
+          <p>
+            The Network of Momentum is a consensus network built around Nostr
+            identities. It provides native payments and community-created
+            incentives for humans and autonomous agents.
+          </p>
+          <p>
+            On the Network of Momentum, a single Nostr identity can be used to
+            coordinate, transact, and earn without separate accounts or wallet
+            keys.
+          </p>
+          <p class="network-narrative-emphasis">
+            n15m: Decentralization in motion.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <header class="principles-heading shell">
+      <h2>Core principles</h2>
+      <nav aria-label="Core principles">
+        <ul class="principles-index">
+          <li><a href="#sovereignty">Sovereignty</a></li>
+          <li><a href="#civility">Civility</a></li>
+          <li><a href="#prosperity">Prosperity</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section
+      class="principle sovereignty"
+      id="sovereignty"
+      aria-labelledby="sovereignty-title"
+    >
+      <div class="shell principle-grid">
+        <header>
+          <h2 class="section-index" id="sovereignty-title">01 / Sovereignty</h2>
+        </header>
+        <div class="principle-body">
+          <div class="principle-lead">
+            <div class="sovereignty-intro">
+              <p class="principle-statement">
+                <strong>Sovereignty is not granted.</strong>
+                <span>Claim it. Keep it. Defend it.</span>
+              </p>
+              <a class="stack-cta" href="#sovereignty-projects">
+                Own your stack
+                <ArrowRight aria-hidden="true" />
+              </a>
+            </div>
+            <PrincipleArtwork principle="sovereignty" />
+          </div>
+          <div class="project-rail-header">
+            <p>Featured projects</p>
+            <div class="rail-controls">
+              <button
+                type="button"
+                aria-label="Previous project"
+                data-project-previous
+              >
+                <ArrowLeft aria-hidden="true" />
+              </button>
+              <output
+                data-project-count
+                aria-label="Current project"
+                aria-live="polite"
+                >01 / {String(projects.length).padStart(2, "0")}</output
+              >
+              <button type="button" aria-label="Next project" data-project-next>
+                <ArrowRight aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+          <div
+            class="project-grid"
+            id="sovereignty-projects"
+            role="region"
+            tabindex="0"
+            aria-label="Sovereignty projects"
+            data-project-rail
+          >
+            {
+              projects.map((project) => (
+                <article
+                  class:list={[
+                    "project-card",
+                    project.featured
+                      ? "project-card-sovereignty"
+                      : "project-card-placeholder",
+                  ]}
+                >
+                  <div class="project-card-header">
+                    <p class="project-code">{project.code}</p>
+                  </div>
+                  <h3>{project.name}</h3>
+                  <p class="project-status">
+                    <span /> Coming soon
+                  </p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="principle civility"
+      id="civility"
+      aria-labelledby="civility-title"
+    >
+      <div class="shell principle-grid">
+        <header>
+          <h2 class="section-index" id="civility-title">02 / Civility</h2>
+        </header>
+        <div class="principle-body">
+          <div class="principle-lead">
+            <div class="civility-intro">
+              <p class="principle-statement">
+                <strong>Civility is not agreement.</strong>
+                <span>Challenge. Listen. Collaborate.</span>
+              </p>
+              <a class="connect-cta" href="#community-network">
+                Get connected
+                <ArrowRight aria-hidden="true" />
+              </a>
+            </div>
+            <PrincipleArtwork principle="civility" />
+          </div>
+          <div class="community-directory" id="community-network">
+            <p class="community-directory-label">Community network</p>
+            <div class="community-directory-grid">
+              <article>
+                <span>npubs</span>
+                <h3>Community directory coming soon.</h3>
+              </article>
+              <article>
+                <span>relays</span>
+                <h3>Bootstrap relays coming soon.</h3>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="principle prosperity"
+      id="prosperity"
+      aria-labelledby="prosperity-title"
+    >
+      <div class="shell principle-grid">
+        <header>
+          <h2 class="section-index" id="prosperity-title">03 / Prosperity</h2>
+        </header>
+        <div class="principle-body">
+          <div class="principle-lead">
+            <div class="prosperity-intro">
+              <p class="principle-statement">
+                <strong>Prosperity is not zero-sum.</strong>
+                <span>Build. Earn. Grow.</span>
+              </p>
+              <a class="build-cta" href="#build-resources">
+                Start building
+                <ArrowRight aria-hidden="true" />
+              </a>
+            </div>
+            <PrincipleArtwork principle="prosperity" />
+          </div>
+          <div class="build-resources" id="build-resources">
+            <section class="resource-group" aria-labelledby="sdks-title">
+              <h3 id="sdks-title">SDKs</h3>
+              <p class="resource-coming">Coming soon.</p>
+            </section>
+            <section class="resource-group" aria-labelledby="noms-title">
+              <h3 id="noms-title">NOMs</h3>
+              <p class="resource-coming">Coming soon to your relay.</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="use-cases-section" aria-labelledby="use-cases-title">
+      <div class="use-cases-layout shell">
+        <header class="use-cases-heading">
+          <p class="section-index">Use cases</p>
+          <h2 id="use-cases-title">The network in motion.</h2>
+          <p class="use-cases-intro">
+            <strong>Consensus where needed.</strong> Identity continuity, decentralized
+            naming, economic coordination, and beyond.
+          </p>
+        </header>
+        <ol class="use-cases-list">
+          <li>
+            <span>01</span>
+            <div>
+              <h3>Communities that coordinate value</h3>
+              <p>
+                Move more than messages through Nostr's web of trust. Coordinate
+                resources, commitments, and rewards.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span>02</span>
+            <div>
+              <h3>Decentralized name services</h3>
+              <p>
+                Human-readable names anchored by consensus, without a central
+                registrar.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span>03</span>
+            <div>
+              <h3>Privacy-preserving payments</h3>
+              <p>Use PTLCs to make routed payments harder to correlate.</p>
+            </div>
+          </li>
+          <li>
+            <span>04</span>
+            <div>
+              <h3>Agents that can transact</h3>
+              <p>
+                One identity for agents to coordinate, pay, and earn. No
+                platform account. No second wallet.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span>05</span>
+            <div>
+              <h3>Infrastructure worth running</h3>
+              <p>
+                Make useful relays and services worth operating, not just
+                volunteering for.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span>06</span>
+            <div>
+              <h3>Protocols that fund their future</h3>
+              <p>
+                Fund open protocol work from the networks that depend on it.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section
+      class="roadmap-section"
+      id="roadmap"
+      aria-labelledby="roadmap-title"
+    >
+      <div class="roadmap-layout shell">
+        <header class="roadmap-heading">
+          <p class="section-index">Launch roadmap</p>
+          <h2 id="roadmap-title">The road to launch.</h2>
+        </header>
+        <ol class="roadmap-list">
+          <li>
+            <span>01</span>
+            <div>
+              <h3>Bootstrap relays</h3>
+              <p>
+                Bring the first relays online. Signal intent to participate.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span>02</span>
+            <div>
+              <h3>Disseminate NOMs</h3>
+              <p>
+                Put the first Notions, Options &amp; Motions on Nostr. Debate
+                them in public.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span>03</span>
+            <div>
+              <h3>Build in the open</h3>
+              <p>Build the software in public, from first commit to launch.</p>
+            </div>
+          </li>
+          <li>
+            <span>04</span>
+            <div>
+              <h3>Snapshot and launch</h3>
+              <p>Agree the launch state. Start the network.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="join-section" id="join" aria-labelledby="join-title">
+      <div class="join-grid shell">
+        <header class="join-header">
+          <p class="section-index">Get started</p>
+          <h2 id="join-title">Send a signal.</h2>
+          <p>
+            Bring your Nostr key. Set the network in motion. Participation opens
+            soon.
+          </p>
+        </header>
+      </div>
+    </section>
+  </main>
+
+  <script src="../scripts/home.ts"></script>
+</SiteLayout>

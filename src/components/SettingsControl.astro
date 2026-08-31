@@ -1,0 +1,247 @@
+---
+import {
+  Monitor,
+  Moon,
+  Pause,
+  Play,
+  Radio,
+  Settings,
+  Sun,
+} from "@lucide/astro";
+---
+
+<div class="settings-control">
+  <button
+    class="settings-toggle"
+    type="button"
+    aria-label="Open settings"
+    aria-controls="site-settings"
+    aria-expanded="false"
+    data-settings-toggle
+  >
+    <Settings aria-hidden="true" />
+  </button>
+  <div class="settings-panel" id="site-settings" data-settings-panel hidden>
+    <header class="settings-panel-header">
+      <h2 id="settings-title">Settings</h2>
+    </header>
+
+    <div class="settings-section">
+      <h3 id="settings-theme-title">Theme</h3>
+      <div
+        class="settings-options"
+        role="group"
+        aria-labelledby="settings-theme-title"
+      >
+        <button type="button" data-theme-option="system">
+          <Monitor aria-hidden="true" />
+          Auto
+        </button>
+        <button type="button" data-theme-option="light">
+          <Sun aria-hidden="true" />
+          Light
+        </button>
+        <button type="button" data-theme-option="dark">
+          <Moon aria-hidden="true" />
+          Dark
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-section settings-section-row">
+      <h3>Motion</h3>
+      <button
+        class="settings-switch"
+        type="button"
+        role="switch"
+        aria-label="Motion"
+        aria-checked="true"
+        data-motion-toggle
+      >
+        <span data-motion-icon="pause"><Pause aria-hidden="true" /></span>
+        <span data-motion-icon="play" hidden><Play aria-hidden="true" /></span>
+      </button>
+      <span
+        class="visually-hidden"
+        id="motion-system-status"
+        data-motion-status
+        hidden
+      >
+        Motion is disabled by your system preference.
+      </span>
+    </div>
+
+    <div
+      class="settings-section settings-section-row settings-section-disabled"
+      aria-disabled="true"
+    >
+      <h3><Radio aria-hidden="true" />Relays</h3>
+      <span class="settings-status">Coming soon</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  type ThemePreference = "system" | "light" | "dark";
+
+  const root = document.documentElement;
+  const settingsControl =
+    document.querySelector<HTMLElement>(".settings-control");
+  const settingsToggle = settingsControl?.querySelector<HTMLButtonElement>(
+    "[data-settings-toggle]",
+  );
+  const settingsPanel = settingsControl?.querySelector<HTMLElement>(
+    "[data-settings-panel]",
+  );
+  const themeOptions =
+    settingsControl?.querySelectorAll<HTMLButtonElement>(
+      "[data-theme-option]",
+    ) ?? [];
+  const motionToggle = settingsControl?.querySelector<HTMLButtonElement>(
+    "[data-motion-toggle]",
+  );
+  const motionIcons =
+    settingsControl?.querySelectorAll<HTMLElement>("[data-motion-icon]") ?? [];
+  const motionStatus = settingsControl?.querySelector<HTMLElement>(
+    "[data-motion-status]",
+  );
+  const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  function readPreference(key: string) {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  function writePreference(key: string, value?: string) {
+    try {
+      if (value === undefined) localStorage.removeItem(key);
+      else localStorage.setItem(key, value);
+    } catch {}
+  }
+
+  const savedTheme = readPreference("n15m-theme");
+  let themePreference: ThemePreference =
+    savedTheme === "light" || savedTheme === "dark" ? savedTheme : "system";
+  let motionPaused = readPreference("n15m-motion") === "paused";
+
+  function setSettings(open: boolean) {
+    if (!settingsToggle || !settingsPanel) return;
+    settingsPanel.hidden = !open;
+    settingsToggle.setAttribute("aria-expanded", String(open));
+    settingsToggle.setAttribute(
+      "aria-label",
+      open ? "Close settings" : "Open settings",
+    );
+  }
+
+  function applyTheme(preference: ThemePreference, persist = true) {
+    themePreference = preference;
+    const theme =
+      preference === "system"
+        ? systemTheme.matches
+          ? "dark"
+          : "light"
+        : preference;
+    root.dataset.theme = theme;
+    root.dataset.themePreference = preference;
+    if (persist) {
+      writePreference(
+        "n15m-theme",
+        preference === "system" ? undefined : preference,
+      );
+    }
+    document
+      .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#181817" : "#f7f7f5");
+    for (const option of themeOptions) {
+      option.setAttribute(
+        "aria-pressed",
+        String(option.dataset.themeOption === preference),
+      );
+    }
+  }
+
+  function applyMotion() {
+    const systemPaused = reducedMotion.matches;
+    const paused = systemPaused || motionPaused;
+    root.dataset.motion = paused ? "paused" : "running";
+    if (motionToggle) {
+      motionToggle.setAttribute("aria-disabled", String(systemPaused));
+      motionToggle.setAttribute("aria-checked", String(!paused));
+      if (systemPaused) {
+        motionToggle.setAttribute("aria-describedby", "motion-system-status");
+      } else {
+        motionToggle.removeAttribute("aria-describedby");
+      }
+      motionToggle.title = systemPaused
+        ? "Motion disabled by system setting"
+        : paused
+          ? "Play motion"
+          : "Pause motion";
+    }
+    if (motionStatus) motionStatus.hidden = !systemPaused;
+    for (const icon of motionIcons) {
+      icon.hidden = icon.dataset.motionIcon !== (paused ? "play" : "pause");
+    }
+    window.dispatchEvent(
+      new CustomEvent("n15m:motion-change", { detail: { paused } }),
+    );
+  }
+
+  settingsToggle?.addEventListener("click", () => {
+    setSettings(settingsToggle.getAttribute("aria-expanded") !== "true");
+  });
+  for (const option of themeOptions) {
+    option.addEventListener("click", () => {
+      applyTheme(option.dataset.themeOption as ThemePreference);
+    });
+  }
+  motionToggle?.addEventListener("click", () => {
+    if (reducedMotion.matches) return;
+    motionPaused = !motionPaused;
+    writePreference("n15m-motion", motionPaused ? "paused" : "running");
+    applyMotion();
+  });
+  systemTheme.addEventListener("change", () => {
+    if (themePreference === "system") applyTheme("system", false);
+  });
+  reducedMotion.addEventListener("change", applyMotion);
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || settingsPanel?.hidden) return;
+    setSettings(false);
+    settingsToggle?.focus();
+  });
+  document.addEventListener("click", (event) => {
+    if (
+      settingsToggle?.getAttribute("aria-expanded") === "true" &&
+      !settingsControl?.contains(event.target as Node)
+    ) {
+      setSettings(false);
+    }
+  });
+  settingsControl?.addEventListener("focusout", (event) => {
+    if (!settingsControl.contains(event.relatedTarget as Node | null)) {
+      setSettings(false);
+    }
+  });
+  window.addEventListener("storage", (event) => {
+    if (event.key === "n15m-theme") {
+      const preference =
+        event.newValue === "light" || event.newValue === "dark"
+          ? event.newValue
+          : "system";
+      applyTheme(preference, false);
+    }
+    if (event.key === "n15m-motion") {
+      motionPaused = event.newValue === "paused";
+      applyMotion();
+    }
+  });
+
+  applyTheme(themePreference, false);
+  applyMotion();
+  root.classList.add("settings-ready");
+</script>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#181817" />
+  <text x="72" y="92" fill="#989892" font-family="Menlo, monospace" font-size="22">NETWORK OF MOMENTUM</text>
+  <text x="68" y="260" fill="#f7f7f5" font-family="Arial Black, Arial, sans-serif" font-size="128" font-weight="800">n15m</text>
+  <text x="72" y="380" fill="#f7f7f5" font-family="Arial, sans-serif" font-size="58" font-weight="600">Powering the new</text>
+  <text x="72" y="454" fill="#f7f7f5" font-family="Arial, sans-serif" font-size="58" font-weight="600">decentralized web.</text>
+  <rect x="72" y="552" width="352" height="8" fill="#f7931a" />
+  <rect x="424" y="552" width="352" height="8" fill="#662482" />
+  <rect x="776" y="552" width="352" height="8" fill="#00d557" />
+</svg>

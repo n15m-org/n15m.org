@@ -1,0 +1,176 @@
+---
+interface Props {
+  principle: "sovereignty" | "civility" | "prosperity";
+}
+
+const { principle } = Astro.props;
+const scenes = {
+  sovereignty: {
+    description: "A pixel-art honey badger moving forward.",
+    offsetX: 4,
+    offsetY: 16,
+    pixels: [
+      "",
+      "            +++++++++++++",
+      "          ++++++++++++++++++",
+      "       ++++++##########++++++++##",
+      "  ###++++++++#############++#####",
+      "####  ####+##################  ###",
+      "       ##################### ## ##",
+      "       #######################  ##",
+      "       #########################",
+      "       ##  ++        ++  ##",
+      "      ###   ++      ++   ###",
+      "      ####   ++    ++     ####",
+      "      ............................",
+    ],
+  },
+  civility: {
+    description: "A pixel-art Nostr ostrich running.",
+    offsetX: 5,
+    offsetY: 16,
+    pixels: [
+      "                    #######",
+      "                    ##  #####",
+      "                    ########",
+      "                       ###",
+      "                       ###",
+      "                       ###",
+      "       ##    ########  ###",
+      "    ###++#####+++++++#####",
+      "  ##++++++++++++++++++###",
+      "   ###########+++++++##",
+      "       ##    ########",
+      "      ##        ##",
+      "     ##         ##",
+      "   ###          ####",
+      "  ....  ........  ...  ......  ...",
+    ],
+  },
+  prosperity: {
+    description: "A compact top-down pixel-art bee in flight.",
+    offsetX: 10,
+    offsetY: 16,
+    pixels: [
+      "      #              #",
+      "       #            #",
+      "         #        #",
+      "          ########",
+      "         ##########",
+      "         ### ## ###",
+      "         ##########",
+      "      +++##########+++",
+      "   ++++++##########++++++",
+      "  +++++++##      ##+++++++",
+      "  +++++++##########+++++++",
+      "  +++++++##########+++++++",
+      "  +++++++##      ##+++++++",
+      "    +++++##########+++++",
+      "         ##########",
+      "          ########",
+      "           ######",
+    ],
+  },
+};
+
+const scene = scenes[principle];
+const civilityFrameTwo = scenes.civility.pixels.map((row, index) => {
+  const alternateLegs: Record<number, string> = {
+    10: "             ########",
+    11: "             ##   ##",
+    12: "           ##       ##",
+    13: "        ####          ####",
+    14: " ....  ........  ...  ......  ...",
+  };
+
+  return alternateLegs[index] ?? row;
+});
+const sovereigntyFrameTwo = scenes.sovereignty.pixels.map((row, index) => {
+  const alternateLegs: Record<number, string> = {
+    8: "       +########################",
+    9: "       ++ ##           ## ++",
+    10: "      +++  ###       ###   +++",
+    11: "     +++    ####     ####     ++",
+  };
+
+  return alternateLegs[index] ?? row;
+});
+const prosperityFrameTwo = scenes.prosperity.pixels.map((row, index) => {
+  const foldedWings: Record<number, string> = {
+    7: "        +##########+",
+    8: "     ++++##########++++",
+    9: "    +++++##      ##+++++",
+    10: "    +++++##########+++++",
+    11: "    +++++##########+++++",
+    12: "    +++++##      ##+++++",
+    13: "      +++##########+++",
+  };
+
+  return foldedWings[index] ?? row;
+});
+const frames =
+  principle === "civility"
+    ? [scene.pixels, civilityFrameTwo]
+    : principle === "sovereignty"
+      ? [scene.pixels, sovereigntyFrameTwo]
+      : [scene.pixels, prosperityFrameTwo];
+
+type Pixel = "#" | "+" | ".";
+
+function toPath(frame: string[], pixel: Pixel, frameIndex: number) {
+  if (principle === "prosperity" && frameIndex === 1 && pixel !== "+") {
+    return "";
+  }
+
+  const offsetX = scene.offsetX - 4;
+  const offsetY = scene.offsetY - 12;
+  const lift =
+    principle === "civility" && frameIndex === 1 && pixel !== "." ? -1 : 0;
+  const segments: string[] = [];
+
+  frame.forEach((row, y) => {
+    let x = 0;
+    while (x < row.length) {
+      if (row[x] !== pixel) {
+        x += 1;
+        continue;
+      }
+
+      const start = x;
+      while (row[x] === pixel) x += 1;
+      const length = x - start;
+      segments.push(
+        `M${start + offsetX} ${y + offsetY + lift}h${length}v1h-${length}z`,
+      );
+    }
+  });
+
+  return segments.join("");
+}
+
+const svgFrames = frames.map((frame, frameIndex) => ({
+  primary: toPath(frame, "#", frameIndex),
+  mid: toPath(frame, "+", frameIndex),
+  faint: toPath(frame, ".", frameIndex),
+}));
+---
+
+<figure class:list={["principle-artwork", `principle-artwork-${principle}`]}>
+  <svg
+    viewBox="0 0 40 24"
+    role="img"
+    aria-label={scene.description}
+    focusable="false"
+    shape-rendering="crispEdges"
+  >
+    {
+      svgFrames.map((frame, frameIndex) => (
+        <g class:list={["pixel-frame", `pixel-frame-${frameIndex}`]}>
+          {frame.primary && <path d={frame.primary} />}
+          {frame.mid && <path class="pixel-mid" d={frame.mid} />}
+          {frame.faint && <path class="pixel-faint" d={frame.faint} />}
+        </g>
+      ))
+    }
+  </svg>
+</figure>

@@ -1,0 +1,84 @@
+---
+import "@fontsource-variable/schibsted-grotesk";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/identity.css";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const socialImageUrl = new URL("/social-preview.png", Astro.site);
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f7f7f5" />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="n15m" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="n15m: Powering the new decentralized web."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta
+      name="twitter:image:alt"
+      content="n15m: Powering the new decentralized web."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+    <script is:inline>
+      document.documentElement.classList.add("has-js");
+      let savedTheme = null;
+      let savedMotion = null;
+      try {
+        savedTheme = localStorage.getItem("n15m-theme");
+        savedMotion = localStorage.getItem("n15m-motion");
+      } catch {}
+      const themePreference =
+        savedTheme === "light" || savedTheme === "dark" ? savedTheme : "system";
+      const theme =
+        themePreference !== "system"
+          ? themePreference
+          : matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.dataset.themePreference = themePreference;
+      document.documentElement.dataset.motion =
+        savedMotion === "paused" ||
+        matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "paused"
+          : "running";
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", theme === "dark" ? "#181817" : "#f7f7f5");
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <SiteHeader />
+    <slot />
+    <SiteFooter />
+  </body>
+</html>
